@@ -1,20 +1,18 @@
 package edu.ap.jaxrs;
 
-import java.util.ArrayList;
 import java.util.Set;
-
 import javax.ws.rs.*;
-
 import redis.clients.jedis.Jedis;
 
 @Path("/quotes")
 public class Quotes {
 
 	private boolean filled = false;
+	private Jedis jedis;
 	
 	private void fillDB(){
 		if (!filled){
-			Jedis jedis = new Jedis("localhost");
+			jedis = new Jedis("localhost");
 			jedis.set("author:1", "Winston Churchill");
 			jedis.set("author:2", "Albert Einstein");
 			jedis.set("author:3", "W. C. Fields");
@@ -32,7 +30,7 @@ public class Quotes {
 	@Produces({"text/html"})
 	public String getAllQuotes(){
 		fillDB();
-		Jedis jedis = new Jedis("localhost");
+		jedis = new Jedis("localhost");
 		String returnString = "<h1>All quotes:</h1><br><br><ul>";
 		Set<String> keys = jedis.keys("quote:*");
 		for(String key : keys) {
@@ -45,7 +43,7 @@ public class Quotes {
 	@Produces({"text/html"})
 	public String getQuotesByAuthor(String author){
 		fillDB();
-		Jedis jedis = new Jedis("localhost");
+		jedis = new Jedis("localhost");
 		String returnString = "<h1>All quotes by " + author + ":</h1><br><br><ul>";
 		Set<String> authorKeys = jedis.keys("author:?");
 		String authorKey = "";
